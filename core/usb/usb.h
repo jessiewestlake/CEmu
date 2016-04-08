@@ -5,13 +5,12 @@
 extern "C" {
 #endif
 
-#include "port.h"
-#include <stdint.h>
-#include <stdbool.h>
+#include "../port.h"
+#include "fotg210.h"
 #include <stdio.h>
 
 typedef struct usb_state {
-    uint8_t dummy;
+    struct fotg210_regs regs;
 } usb_state_t;
 
 extern usb_state_t usb;
