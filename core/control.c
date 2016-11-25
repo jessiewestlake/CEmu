@@ -40,12 +40,12 @@ static uint8_t control_read(const uint16_t pio, bool peek) {
             break;
         case 0x0F:
             value = control.ports[index];
-            if (control.usbBusPowered)    { value |= 0x80; }
+            if (control.usbBusPowered)  { value |= 0x80; }
             if (control.usbSelfPowered) { value |= 0x40; }
             break;
         case 0x1C:
             value = 0x80;
-            if (usb.regs.hcor.data[8] & 1) {
+            if (usb.regs.hcor.portsc[0] & 1) {
                 value |= 0x80;
             }
             if (usb.regs.otgcsr & 0x80000) {
