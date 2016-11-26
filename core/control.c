@@ -38,11 +38,6 @@ static uint8_t control_read(const uint16_t pio, bool peek) {
             /* bit 1 set if charging */
             value = control.ports[index] | (control.batteryCharging == true) << 1;
             break;
-        case 0x0F:
-            value = control.ports[index];
-            if (control.usbBusPowered)  { value |= 0x80; }
-            if (control.usbSelfPowered) { value |= 0x40; }
-            break;
         case 0x1C:
             value = 0x80;
             if (usb.regs.hcor.portsc[0] & 1) {
@@ -51,6 +46,11 @@ static uint8_t control_read(const uint16_t pio, bool peek) {
             if (usb.regs.otgcsr & 0x80000) {
                 value |= 0x40;
             }
+            /* bit 2 set if charging */
+            value = control.ports[index] | control.batteryCharging << 1;
+            break;
+        case 0x0F:
+            value = control.ports[index] | usb_status();
             break;
         case 0x1D: case 0x1E: case 0x1F:
             value = read8(control.privileged, (index - 0x1D) << 3);
@@ -235,11 +235,15 @@ void control_reset(void) {
     control.privileged = 0xFFFFFF;
     control.protectedStart = control.protectedEnd = 0xD1887C;
     control.protectionStatus = 0;
+<<<<<<< ab7058e055e19e2153cf88fb8cad11461d24e8bc
     control.stackLimit = 0;
     control.cpuSpeed = 0;
     control.flashUnlocked = false;
     control.protectedPortsUnlocked = false;
     control.off = false;
+=======
+    control.ports[0xF] = 0x2;
+>>>>>>> Improved a bunch of usb behavior.
 
     gui_console_printf("[CEmu] Control reset.\n");
 }
