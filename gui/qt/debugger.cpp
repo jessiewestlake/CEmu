@@ -731,6 +731,7 @@ void MainWindow::debuggerGUIPopulate() {
     updateStackView();
     prevDisasmAddress = cpu.registers.PC;
     updateDisasmView(prevDisasmAddress, true);
+    ui->sources->updatePC(prevDisasmAddress);
 
     ramUpdate();
     flashUpdate();
