@@ -79,6 +79,7 @@ public slots:
 #endif
 
     // Debugging
+    void breakpointToggle(quint32 address, bool gui = true);
     void debuggerGUIDisable();
     void debuggerGUIEnable();
 

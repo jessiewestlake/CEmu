@@ -859,6 +859,14 @@ void MainWindow::breakpointSlotAdd() {
     breakpointAdd(breakpointNextLabel(), 0, true, false);
 }
 
+void MainWindow::breakpointToggle(quint32 address, bool gui) {
+    guiAdd = gui;
+
+    breakpointAdd("", address, true, true);
+
+    guiAdd = false;
+}
+
 void MainWindow::breakpointGUIAdd() {
     uint32_t address = static_cast<uint32_t>(hex2int(ui->disassemblyView->getSelectedAddress()));
 

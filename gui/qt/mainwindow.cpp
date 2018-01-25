@@ -153,6 +153,8 @@ MainWindow::MainWindow(CEmuOpts cliOpts, QWidget *p) : QMainWindow(p), ui(new Ui
     connect(ui->disassemblyView, &DataWidget::gotoDisasmAddress, this, &MainWindow::forceGotoDisasm);
     connect(ui->disassemblyView, &DataWidget::gotoMemoryAddress, this, &MainWindow::forceGotoMemory);
 
+    connect(ui->sources, &SourcesWidget::breakpointToggled, this, &MainWindow::breakpointToggle);
+
     // Ctrl + Click
     connect(ui->console, &QPlainTextEdit::cursorPositionChanged, this, [this]{ handleCtrlClickText(ui->console); });
     connect(ui->stackView, &QPlainTextEdit::cursorPositionChanged, this, [this]{ handleCtrlClickText(ui->stackView); });
