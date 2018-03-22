@@ -238,15 +238,12 @@ void control_reset(void) {
     control.privileged = 0xFFFFFF;
     control.protectedStart = control.protectedEnd = 0xD1887C;
     control.protectionStatus = 0;
-<<<<<<< ab7058e055e19e2153cf88fb8cad11461d24e8bc
     control.stackLimit = 0;
     control.cpuSpeed = 0;
     control.flashUnlocked = false;
     control.protectedPortsUnlocked = false;
     control.off = false;
-=======
     control.ports[0xF] = 0x2;
->>>>>>> Improved a bunch of usb behavior.
 
     gui_console_printf("[CEmu] Control reset.\n");
 }

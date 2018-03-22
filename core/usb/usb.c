@@ -1,5 +1,6 @@
 #include "usb.h"
 #include "../emu.h"
+#include "../mem.h"
 #include "../schedule.h"
 #include "../interrupt.h"
 #include "../debug/debug.h"
@@ -89,7 +90,7 @@ void usb_send_pkt(void *data, uint32_t size) {
 //static uint8_t ep0_init[] = { 0x80, 0x06, 0x02, 0x02, 0x00, 0x00, 0x40, 0x00 };
 //static uint8_t ep0_init[] = { 0x80, 0x06, 0x03, 0x03, 0x09, 0x04, 0x40, 0x00 };
 //static uint8_t ep0_init[] = { 0x00, 0x05, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00 };
-static void usb_event(int event) {
+static void usb_event(enum sched_item_id id) {
     static const uint8_t set_addr[]   = { 0x00, 0x05, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00 };
     static const uint8_t set_config[] = { 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00 };
     static const uint8_t rdy_pkt_00[] = { 0x00, 0x00, 0x00, 0x04, 0x01, 0x00, 0x00, 0x04, 0x00 };
@@ -127,7 +128,7 @@ static void usb_event(int event) {
             }
             break;
     }
-    event_repeat(event, 5000);
+    sched_repeat(id, 5000);
 }
 
 uint8_t usb_status(void) {
@@ -379,8 +380,9 @@ void usb_reset(void) {
     usb_grp2_int(GISR2_IDLE);     // because idle == 0 ms
     usb_plug();
 #undef clear
-    sched.items[SCHED_USB].proc = usb_event;
+    sched.items[SCHED_USB].callback.event = usb_event;
     sched.items[SCHED_USB].clock = CLOCK_32K;
+    sched_clear(SCHED_USB);
 }
 
 static void usb_init_hccr(void) {
@@ -405,13 +407,12 @@ eZ80portrange_t init_usb(void) {
     return device;
 }
 
-bool usb_save(emu_image *s) {
-    s->usb = usb;
-    return true;
+bool usb_save(FILE *image) {
+    return fwrite(&usb, sizeof(usb), 1, image) == 1;
 }
 
-bool usb_restore(const emu_image *s) {
-    usb = s->usb;
+bool usb_restore(FILE *image) {
+    bool ret = fread(&usb, sizeof(usb), 1, image) == 1;
     usb_init_hccr(); // hccr is read only
     // these bits are raz
     usb.regs.hcor.periodiclistbase &= 0xFFFFF000;
@@ -424,5 +425,5 @@ bool usb_restore(const emu_image *s) {
     usb.regs.gimr0                 &= GIMR0_MASK;
     usb.regs.gimr1                 &= GIMR1_MASK;
     usb.regs.gimr2                 &= GIMR2_MASK;
-    return true;
+    return ret;
 }
